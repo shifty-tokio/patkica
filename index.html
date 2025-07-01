@@ -1,23 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Toggle Patkica</title>
+  <meta charset="UTF-8">
+  <title>Global Toggle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { font-family: sans-serif; text-align: center; margin-top: 100px; }
-    #value { font-size: 80px; margin-bottom: 20px; }
-    button { font-size: 24px; padding: 10px 20px; }
+    #valueDisplay { font-size: 80px; margin-bottom: 40px; }
+    button { font-size: 30px; padding: 15px 30px; }
   </style>
 </head>
 <body>
-  <div id="value">0</div>
-  <button onclick="toggle()">Toggle</button>
+  <div id="valueDisplay">...</div>
+  <button onclick="toggleValue()">Toggle</button>
 
   <script>
-    function toggle() {
-      const valueDiv = document.getElementById('value');
-      valueDiv.textContent = valueDiv.textContent === "1" ? "0" : "1";
+    const password = "patkica123";
+    const storeUrl = "https://jsonblob.com/api/jsonBlob/1389514677524029440";
+    const display = document.getElementById("valueDisplay");
+
+    if (prompt("Enter password:") !== password) {
+      document.body.innerHTML = "<h1>Access Denied</h1>";
+      throw new Error("Access Denied");
+    }
+
+    // Load value
+    fetch(storeUrl)
+      .then(res => res.json())
+      .then(data => {
+        display.textContent = data.toggleValue || "0";
+      });
+
+    function toggleValue() {
+      const newValue = display.textContent === "0" ? "1" : "0";
+      display.textContent = newValue;
+
+      fetch(storeUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ toggleValue: newValue })
+      });
     }
   </script>
 </body>
